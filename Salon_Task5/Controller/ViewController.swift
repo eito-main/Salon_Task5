@@ -33,9 +33,9 @@ private enum Discrimination {
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var firstTextField: UITextField!
-    @IBOutlet weak var secondTextField: UITextField!
-    @IBOutlet weak var resultLabel: UILabel!
+    @IBOutlet private weak var firstTextField: UITextField!
+    @IBOutlet private weak var secondTextField: UITextField!
+    @IBOutlet private weak var resultLabel: UILabel!
 
     @IBAction func calculateButtonAction(_ sender: Any) {
 
