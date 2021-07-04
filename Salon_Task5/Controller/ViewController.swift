@@ -7,30 +7,6 @@
 
 import UIKit
 
-private enum Discrimination {
-    case firstTextFieldIsEmpty
-    case secondTextFieldIsEmpty
-    case secondTextFieldIsZero
-    case success
-
-    init(firstNumber: Int?,secondNumber: Int?){
-
-        if firstNumber == nil {
-            self = .firstTextFieldIsEmpty
-
-        } else if secondNumber == nil {
-            self = .secondTextFieldIsEmpty
-
-        } else if secondNumber == 0 {
-            self = .secondTextFieldIsZero
-
-        } else {
-            self = .success
-
-        }
-    }
-}
-
 class ViewController: UIViewController {
 
     @IBOutlet private weak var firstTextField: UITextField!
@@ -53,20 +29,17 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         divisionModel.notificationCenter.addObserver(
-            self,
-            selector: #selector(self.handleResultLabelChange(_:)),
-            name: .notifyName,
-            object: nil
+            forName: .didChangeDivisionModelResult,
+            object: nil,
+            queue: OperationQueue.main,
+            using: { [weak self] notification in
+                if let result = notification.object as? Double {
+                    self?.resultLabel.text = String(result)
+                }
+            }
         )
 
         textFields.forEach { $0.keyboardType = .numberPad }
-    }
-
-    @objc private func handleResultLabelChange(_ notification: Notification) {
-
-        if let result = notification.object as? Double {
-            resultLabel.text = String(result)
-        }
     }
 
     func checkNumbers(textFields:[UITextField]) -> [Int]? {
@@ -74,23 +47,22 @@ class ViewController: UIViewController {
         let numberFormatter = NumberFormatter()
 
         let numbers = textFields.map { numberFormatter.number(from: $0.text ?? "")?.intValue }
-        let discrimination = Discrimination(firstNumber: numbers[0], secondNumber: numbers[1])
 
-        switch discrimination {
-        case .firstTextFieldIsEmpty:
+        switch (numbers[0], numbers[1]) {
+        case (nil, _):
             present(.okAlert(title: "課題5", message: "割られる数を入力してください"))
             return nil
 
-        case .secondTextFieldIsEmpty:
+        case (_, nil):
             present(.okAlert(title: "課題5", message: "割る数を入力してください"))
             return nil
 
-        case .secondTextFieldIsZero:
+        case (_, 0):
             present(.okAlert(title: "課題5", message: "割る数には0を入力しないでください"))
             return nil
 
-        case .success:
-            return [numbers[0]!, numbers[1]!]
+        case (let number1?, let number2?):
+            return [number1, number2]
 
         }
     }
