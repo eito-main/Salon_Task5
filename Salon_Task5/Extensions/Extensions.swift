@@ -8,10 +8,6 @@
 import Foundation
 import UIKit
 
-extension Notification.Name {
-    static let notifyName = Notification.Name("DivisionModel")
-}
-
 extension UIAlertController {
     static func okAlert(title: String?,
                         message: String?,
